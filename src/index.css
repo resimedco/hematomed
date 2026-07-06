@@ -1,0 +1,58 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --app-bg: #F7F4EF;
+  --app-surface: #FFFFFF;
+  --app-text: #1A1A18;
+  --app-muted: #6B6862;
+  --app-muted-2: #B4B2A9;
+  --header-gradient-start: #171E33;
+  --header-gradient-end: #0D1220;
+  --accent-primary-start: #C4416A;
+  --accent-primary-end: #7A1533;
+  --accent-primary-dark: #6E132F;
+  --accent-primary-light: #E88CA6;
+  --accent-primary-text: #FCE9EE;
+  --accent-secondary-start: #D6A24C;
+  --accent-secondary-end: #B87A2E;
+  --accent-secondary-light: #F6EBD8;
+  --accent-secondary-lighter: #EDE3D3;
+  --border-default: #EAE6DC;
+  --button-secondary-border: #DEDACF;
+  --neutral-toggle-off: #E4E1D8;
+  --dark-header-icon-bg: rgba(255,255,255,0.06);
+  --active-nav-bg: rgba(23,30,51,0.06);
+  --card-shadow: 0 10px 24px -12px rgba(20,10,15,0.18);
+  --outer-shadow: 0 24px 48px -20px rgba(20,10,15,0.35), 0 4px 12px rgba(20,10,15,0.12);
+  --accent-button-shadow: 0 8px 16px -6px rgba(122,21,51,0.5);
+  font-family: 'Manrope', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: var(--app-text);
+  background: var(--app-bg);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  min-height: 100vh;
+  background: var(--app-bg);
+  font-family: 'Manrope', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}

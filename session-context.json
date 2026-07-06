@@ -1,0 +1,106 @@
+{
+  "project": "hematomed",
+  "createdAt": "2026-07-04T00:00:00.000Z",
+  "updatedAt": "2026-07-06T00:00:00.000Z",
+  "status": "pedagogy-upgrade-complete",
+  "summary": {
+    "app": "Hematomed - PWA educativa React + Vite + TypeScript con arquitectura full-stack Firebase",
+    "pwa": "Configurada como PWA instalable con service worker, manifest y soporte offline",
+    "firebase": "Hosting (dist/) + Cloud Functions v2 (Node 20) + Secret Manager (GOOGLE_API_KEY)",
+    "backend": "Función Cloud Function en functions/src/index.ts expone /google-ai con Google Generative AI (Gemini 2.0 Flash)",
+    "frontend": "Cliente Google AI actualizado en src/lib/claudeClient.ts para consumir función Firebase",
+    "api": "Google Generative AI (Gemini 2.0 Flash) - Migración completa desde Anthropic",
+    "pedagogy": "5 pasos de mejora pedagógica implementados según Plan Estratégico Colombia 2026 + Modelo 3P de Biggs"
+  },
+  "pedagogyPasos": {
+    "paso1": {
+      "nombre": "Caso Clínico como Entrada al Quiz",
+      "status": "completado",
+      "archivos": ["src/screens/Quiz.tsx", "src/components/CaseIntro.tsx", "src/hooks/useClaudeAPI.ts"],
+      "cambios": "Primer paso es narrativa clínica generada por Gemini (3-4 líneas), antes de configurar quiz"
+    },
+    "paso2": {
+      "nombre": "Tutor Contextual en Error",
+      "status": "completado",
+      "archivos": ["src/components/ContextualTutorPrompt.tsx", "src/screens/Quiz.tsx", "src/screens/Tutor.tsx"],
+      "cambios": "Cuando error en respuesta, aparece componente para hablar con tutor (pre-carga contexto en localStorage)"
+    },
+    "paso3": {
+      "nombre": "Mapa de Madurez Clínica",
+      "status": "completado",
+      "archivos": ["src/components/MaturityMap.tsx", "src/screens/Quiz.tsx"],
+      "cambios": "Reemplaza puntuación punitiva (%) por 3 niveles: Dominio Clínico (≥80%), Comprensión en Desarrollo (50-79%), Requiere Refuerzo (<50%)"
+    },
+    "paso4": {
+      "nombre": "Tutor con Pregunta Activadora",
+      "status": "completado",
+      "archivos": ["src/types/index.ts", "src/components/ContextualTutorPrompt.tsx", "src/screens/Quiz.tsx", "src/screens/Tutor.tsx"],
+      "cambios": "Si tutor desde quiz con contexto desde_quiz=true, primer mensaje es pregunta de metacognición (no auto-enviar), esperando reflexión del estudiante"
+    },
+    "paso5": {
+      "nombre": "Mapa de Madurez en Home",
+      "status": "completado",
+      "archivos": ["src/screens/Home.tsx"],
+      "cambios": "En cada módulo clínico, reemplaza barra progreso % por badge madurez (Nuevo/En construcción/Avanzando/Dominado) + ícono checkmark"
+    },
+    "paso6": {
+      "nombre": "Actualizar Profile con lenguaje de madurez",
+      "status": "completado",
+      "archivos": ["src/screens/Profile.tsx"],
+      "cambios": "Agrega sección 'Tu perfil clínico' con lista de temas y niveles descriptivos según el sistema de madurez del Paso 3"
+    }
+  },
+  "importantFiles": [
+    "src/lib/claudeClient.ts",
+    "functions/src/index.ts",
+    "src/screens/Quiz.tsx",
+    "src/screens/Tutor.tsx",
+    "src/screens/Home.tsx",
+    "src/components/CaseIntro.tsx",
+    "src/components/ContextualTutorPrompt.tsx",
+    "src/components/MaturityMap.tsx",
+    "src/types/index.ts",
+    "firebase.json",
+    ".firebaserc",
+    "package.json"
+  ],
+  "verification": {
+    "buildCommand": "npm run build",
+    "buildResult": "success",
+    "lastBuild": "2026-07-06",
+    "buildSize": "465.38 KB (gzipped)",
+    "modules": 36,
+    "errors": 0
+  },
+  "nextSteps": [
+    "firebase functions:secrets:set GOOGLE_API_KEY (pega tu API key Google AI cuando se pida)",
+    "firebase deploy (despliega Hosting + Functions)",
+    "Probar en https://hematomed.web.app y verificar todos los pasos funcionando",
+    "Paso 6+: Nuevas mejoras pedagógicas (pendiente de especificación del usuario)"
+  ],
+  "deployment": {
+    "hosting": "Firebase Hosting (dist/)",
+    "functions": "Cloud Functions v2 (functions/lib/index.js)",
+    "secrets": "GOOGLE_API_KEY en Firebase Secret Manager",
+    "status": "Listo para desplegar"
+  },
+  "codebaseArchitecture": {
+    "frontend": "React 19.2.7 + Vite 8.1.3 + TypeScript 5.7",
+    "styling": "Tailwind CSS 4.3.2 + Tabler Icons",
+    "backend": "Node 20 + TypeScript",
+    "storage": "localStorage (stats, settings, contexto tutor)",
+    "apiLayer": "src/lib/claudeClient.ts → firebase functions/google-ai"
+  },
+  "environment": {
+    "VITE_GOOGLE_API_KEY": "Google Generative AI API key (frontend con VITE_)",
+    "VITE_FIREBASE_*": "Firebase config (auth, storage, messaging, etc.)",
+    "VITE_ENV": "development",
+    "GOOGLE_API_KEY": "Secret Manager (backend only)"
+  },
+  "workspacePath": "c:/Users/alexa/hematomed",
+  "notes": {
+    "arquitectura": "Nunca eliminar lo que funciona. Cada cambio es una capa nueva.",
+    "migracion": "Completamente migrado de Anthropic a Google Generative AI",
+    "pedagogia": "Basado en Plan Estratégico Colombia 2026 + Modelo 3P de Biggs"
+  }
+}

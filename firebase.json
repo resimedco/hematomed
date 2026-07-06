@@ -1,0 +1,26 @@
+{
+  "functions": {
+    "source": "functions",
+    "ignore": [
+      "node_modules",
+      ".gitignore",
+      "firebase-debug.log",
+      "*.local"
+    ]
+  },
+  "hosting": {
+    "public": "dist",
+    "site": "hematomed",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}

@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Hematomed</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Crimson+Pro:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+:root{--navy:#0F1B2D;--navy-mid:#162236;--navy-light:#1E3050;--crimson:#8B1A2E;--crimson-soft:#A8243A;--gold:#C9A84C;--gold-light:#E8CC80;--bg:#F7F5F2;--surface-1:#EDEAE4;--surface-2:#FFFFFF;--text-primary:#0F1B2D;--text-secondary:#3A4F63;--text-muted:#7A8FA0;--border:rgba(15,27,45,.08);--border-strong:rgba(15,27,45,.16);--border-stronger:rgba(15,27,45,.28);--fill-accent:#8B1A2E;--on-accent:#FFFFFF;--bg-accent:#FAF0F2;--border-accent:#D4899A;--text-accent:#6B0F22;--fill-success:#1A5E3A;--bg-success:#EBF5EF;--border-success:#72B894;--text-success:#0F3D25;--fill-danger:#8B1A2E;--bg-danger:#FAF0F2;--border-danger:#D4899A;--text-danger:#6B0F22;--fill-warning:#8B6200;--bg-warning:#FBF4E0;--border-warning:#D4B060;--text-warning:#5C3E00;--bg-pro:#EEF2FF;--text-pro:#3730A3;--radius:10px;--radius-lg:16px;--font-sans:'Inter',system-ui,sans-serif;--font-display:'Crimson Pro',Georgia,serif;--t:.18s ease;--sh-sm:0 1px 3px rgba(15,27,45,.06),0 1px 2px rgba(15,27,45,.04);--sh-md:0 4px 12px rgba(15,27,45,.08),0 2px 4px rgba(15,27,45,.04);--sh-lg:0 12px 32px rgba(15,27,45,.12),0 4px 8px rgba(15,27,45,.06);}
+body.night{--bg:#080E18;--surface-1:#0F1B2D;--surface-2:#162236;--text-primary:#D8E4EE;--text-secondary:#8AAAC0;--text-muted:#4A6A80;--border:rgba(216,228,238,.07);--border-strong:rgba(216,228,238,.14);--border-stronger:rgba(216,228,238,.24);--fill-accent:#C9A84C;--on-accent:#080E18;--bg-accent:#1A1500;--border-accent:#8B6B00;--text-accent:#E8CC80;--fill-success:#2A8A58;--bg-success:#0A2018;--border-success:#2A6A42;--text-success:#60C090;--fill-danger:#C9374A;--bg-danger:#1A0A0E;--border-danger:#7A2030;--text-danger:#F08090;--bg-pro:#10102A;--text-pro:#8080E0;--sh-sm:0 1px 3px rgba(0,0,0,.3);--sh-md:0 4px 12px rgba(0,0,0,.4);--sh-lg:0 12px 32px rgba(0,0,0,.5);}
+body.exam{--bg:#FFF;--surface-1:#F5F5F5;--surface-2:#FFF;--text-primary:#0A0A0A;--text-secondary:#3A3A3A;--text-muted:#6A6A6A;--border:rgba(0,0,0,.10);--border-strong:rgba(0,0,0,.20);--border-stronger:rgba(0,0,0,.36);--fill-accent:#1050A0;--on-accent:#FFF;--bg-accent:#E8F0FC;--border-accent:#4A80D0;--text-accent:#0A3878;--fill-success:#1A6B2E;--bg-success:#E8F5EC;--border-success:#5AAA70;--text-success:#0A4020;--fill-danger:#B01010;--bg-danger:#FCE8E8;--border-danger:#D06060;--text-danger:#700A0A;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--bg);color:var(--text-primary);font-family:var(--font-sans);font-size:15px;line-height:1.6;min-height:100vh;transition:background var(--t),color var(--t);}
+html,body{height:100%;}
+body{overscroll-behavior:none;}
+.app-shell{
+  position:relative;
+  height:100dvh;
+  max-width:720px;
+  margin:0 auto;
+  background:var(--bg);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+.app{max-width:720px;margin:0 auto;padding:0 0 1rem;}
+
+/* TOP APP BAR (fijo) */
+.topbar{
+  position:relative;
+  flex-shrink:0;
+  padding:calc(env(safe-area-inset-top) + 14px) 1.25rem 14px;
+  background:
+    radial-gradient(circle at 85% -20%, rgba(201,168,76,.14) 0%, transparent 55%),
+    radial-gradient(circle at 15% 120%, rgba(139,26,46,.20) 0%, transparent 55%),
+    linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 60%, #1A2E4A 100%);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  z-index:50;
+  border-radius:0 0 20px 20px;
+}
+.topbar-greet{display:flex;flex-direction:column;gap:1px;flex-shrink:0;}
+.topbar-hello{font-size:11px;font-weight:600;color:rgba(255,255,255,.55);text-transform:uppercase;letter-spacing:.08em;}
+.topbar-name{font-family:var(--font-display);font-size:19px;font-weight:700;color:#fff;letter-spacing:-.01em;}
+.topbar .theme-row{margin-left:auto;}
+.topbar .streak-pill{flex-shrink:0;}
+
+/* SCROLLABLE AREA — único lugar con scroll */
+.scroll-area{
+  position:relative;
+  flex:1;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+  padding:16px 1rem calc(var(--navbar-h,74px) + env(safe-area-inset-bottom) + 24px);
+  scrollbar-width:none;
+}
+.scroll-area::-webkit-scrollbar{display:none;}
+
+/* HERO CTA */
+.hero-cta{
+  width:100%;
+  background:linear-gradient(135deg, var(--crimson) 0%, var(--crimson-soft) 100%);
+  border:none;
+  border-radius:16px;
+  padding:1.1rem 1.25rem;
+  display:flex;
+  align-items:center;
+  gap:14px;
+  text-align:left;
+  cursor:pointer;
+  box-shadow:0 8px 20px rgba(139,26,46,.3);
+  margin-bottom:1.25rem;
+  transition:transform .12s ease, box-shadow .12s ease;
+  font-family:var(--font-sans);
+}
+.hero-cta:active{transform:scale(.98);box-shadow:0 4px 12px rgba(139,26,46,.25);}
+.hero-cta-icon{width:46px;height:46px;flex-shrink:0;border-radius:13px;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;}
+.hero-cta-icon i{font-size:23px;color:#fff;}
+.hero-cta-text{flex:1;min-width:0;}
+.hero-cta-title{font-size:15.5px;font-weight:800;color:#fff;letter-spacing:-.01em;}
+.hero-cta-sub{font-size:12px;color:rgba(255,255,255,.78);margin-top:2px;font-weight:500;}
+.hero-cta-arrow{flex-shrink:0;color:rgba(255,255,255,.6);font-size:18px;}
+
+/* MODULE LIST — list view nativo */
+.module-list{background:var(--surface-2);border:1px solid var(--border);border-radius:14px;overflow:hidden;box-shadow:var(--sh-sm,var(--shadow-sm));margin-bottom:1rem;}
+.module-row{display:flex;align-items:center;gap:12px;height:56px;padding:0 1rem;background:var(--surface-2);border:none;border-bottom:1px solid var(--border);width:100%;text-align:left;cursor:pointer;font-family:var(--font-sans);transition:background .1s ease;}
+.module-row:last-child{border-bottom:none;}
+.module-row:active{background:var(--surface-1);}
+.module-icon{width:34px;height:34px;flex-shrink:0;border-radius:9px;background:linear-gradient(135deg,var(--navy),var(--navy-light));display:flex;align-items:center;justify-content:center;}
+.module-icon i{font-size:16px;color:var(--gold);}
+.module-info{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;}
+.module-name{font-size:13.5px;font-weight:700;color:var(--text-primary);}
+.module-progress-row{display:flex;align-items:center;gap:6px;}
+.module-progress-track{flex:1;max-width:90px;height:4px;background:var(--surface-1);border-radius:2px;overflow:hidden;}
+.module-progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--crimson),var(--crimson-soft));}
+.module-pct{font-size:10.5px;font-weight:700;color:var(--text-muted);min-width:36px;text-align:right;}
+.module-chevron{flex-shrink:0;color:var(--text-muted);font-size:17px;}
+
+/* BOTTOM NAVIGATION (fijo) */
+.bottombar{
+  --navbar-h:74px;
+  flex-shrink:0;
+  height:var(--navbar-h);
+  padding-bottom:env(safe-area-inset-bottom);
+  background:rgba(255,255,255,.94);
+  backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);
+  border-top:1px solid var(--surface-1);
+  display:flex;
+  align-items:stretch;
+  z-index:50;
+}
+body.night .bottombar{background:rgba(15,27,45,.92);border-top-color:var(--border);}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;background:none;border:none;cursor:pointer;font-family:var(--font-sans);color:var(--text-muted);transition:opacity .1s ease;}
+.nav-item:active{opacity:.55;}
+.nav-item i{font-size:21px;}
+.nav-item span{font-size:10px;font-weight:600;}
+.nav-item.active{color:var(--navy);}
+.nav-item.active i{color:var(--crimson);}
+body.night .nav-item.active{color:var(--gold);}
+body.night .nav-item.active i{color:var(--gold);}
+
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);border:0;}
+
+/* HERO */
+.hero{background:linear-gradient(135deg,var(--navy) 0%,var(--navy-mid) 60%,#1A2E4A 100%);border-radius:0 0 24px 24px;padding:1.5rem 1.5rem 1.25rem;margin:0 -1rem 1.25rem;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle,rgba(201,168,76,.12) 0%,transparent 70%);pointer-events:none;}
+.hero::after{content:'';position:absolute;bottom:-20px;left:30%;width:120px;height:120px;border-radius:50%;background:radial-gradient(circle,rgba(139,26,46,.18) 0%,transparent 70%);pointer-events:none;}
+.hero-top{display:flex;align-items:flex-start;gap:14px;margin-bottom:1rem;}
+.brand-mark{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--crimson) 0%,#6B0F22 100%);border:1.5px solid rgba(201,168,76,.35);display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 12px rgba(139,26,46,.4);}
+.brand-mark i{font-size:24px;color:#fff;}
+.brand-text{flex:1;min-width:0;}
+.brand-name{font-family:var(--font-display);font-size:22px;font-weight:700;color:#FFF;letter-spacing:-.01em;line-height:1.1;}
+.brand-edition{font-size:11px;font-weight:600;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-top:3px;}
+.streak-pill{display:inline-flex;align-items:center;gap:5px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.3);color:var(--gold-light);border-radius:20px;padding:5px 10px;font-size:12px;font-weight:700;}
+.theme-row{display:flex;align-items:center;gap:6px;}
+.theme-lbl{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);text-transform:uppercase;letter-spacing:.08em;margin-right:2px;}
+.theme-btn{width:30px;height:30px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:border-color var(--t),transform .1s;display:flex;align-items:center;justify-content:center;font-size:14px;}
+.theme-btn:hover{transform:scale(1.12);}
+.theme-btn.active{border-color:var(--gold);}
+#btn-day{background:#E8E0D0;}
+#btn-night{background:#0F1B2D;}
+#btn-exam{background:#FFF;border:2px solid #CCC;}
+.hero-divider{height:1px;background:rgba(255,255,255,.08);margin:.875rem 0;}
+.feature-tags{display:flex;gap:6px;flex-wrap:wrap;}
+.ftag{display:inline-flex;align-items:center;gap:4px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);color:rgba(255,255,255,.7);border-radius:20px;padding:3px 10px;font-size:11px;font-weight:500;}
+.ftag i{font-size:12px;}
+
+/* TABS */
+.tabs-wrap{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:5px;margin-bottom:1.25rem;box-shadow:var(--sh-sm);display:flex;gap:2px;}
+.tab{flex:1;padding:9px 4px 8px;border:none;background:transparent;color:var(--text-muted);font-size:11px;font-weight:500;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-family:var(--font-sans);transition:all var(--t);line-height:1;}
+.tab i{font-size:19px;}
+.tab span{font-size:10.5px;font-weight:600;}
+.tab.active{background:var(--navy);color:#fff;}
+body.night .tab.active{background:var(--fill-accent);color:var(--on-accent);}
+body.exam .tab.active{background:#1050A0;color:#fff;}
+.tab:hover:not(.active){background:var(--surface-1);color:var(--text-secondary);}
+@media(max-width:480px){.tab span{display:none;}.tab{padding:10px 4px;}.tab i{font-size:21px;}}
+
+.panel{display:none;}.panel.active{display:block;}
+.slabel{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.card{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1.25rem;box-shadow:var(--sh-sm);}
+
+/* METRICS */
+.metric-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:8px;margin-bottom:1.1rem;}
+.metric{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:1rem 1rem .875rem;box-shadow:var(--sh-sm);position:relative;overflow:hidden;}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--crimson),var(--gold));border-radius:var(--radius-lg) var(--radius-lg) 0 0;}
+.metric-val{font-size:26px;font-weight:800;color:var(--text-primary);line-height:1;font-variant-numeric:tabular-nums;}
+.metric-lbl{font-size:10.5px;color:var(--text-muted);margin-top:5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:2rem 1.5rem;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);margin-bottom:1rem;box-shadow:var(--sh-sm);}
+.empty-icon{width:64px;height:64px;background:linear-gradient(135deg,var(--bg-accent),#fff);border:1.5px solid var(--border-accent);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 1rem;}
+.empty-icon i{font-size:30px;color:var(--fill-accent);}
+.empty-title{font-size:16px;font-weight:700;color:var(--text-primary);margin-bottom:6px;}
+.empty-sub{font-size:13px;color:var(--text-secondary);line-height:1.6;margin-bottom:1.25rem;}
+
+/* PROGRESS */
+.progress-bar{height:6px;background:var(--surface-1);border-radius:3px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:3px;transition:width .45s ease;}
+.pf-accent{background:linear-gradient(90deg,var(--crimson),var(--crimson-soft));}
+.pf-success{background:linear-gradient(90deg,var(--fill-success),#2A8A58);}
+.pf-warning{background:linear-gradient(90deg,var(--fill-warning),#C9A84C);}
+
+/* TEMAS */
+.tema-row{background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius-lg);padding:13px 14px;cursor:pointer;display:flex;align-items:center;gap:13px;margin-bottom:8px;transition:border-color var(--t),background var(--t),box-shadow var(--t);box-shadow:var(--sh-sm);}
+.tema-row:hover{border-color:var(--border-accent);background:var(--bg-accent);box-shadow:var(--sh-md);}
+.tema-ico{width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,var(--navy),var(--navy-light));border:1px solid rgba(201,168,76,.2);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.tema-ico i{font-size:18px;color:var(--gold);}
+.tema-name{font-size:13px;font-weight:700;color:var(--text-primary);}
+.tema-sub{font-size:11px;color:var(--text-muted);margin-top:2px;line-height:1.4;}
+
+/* TOPIC GRID */
+.topic-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(138px,1fr));gap:8px;margin-bottom:1rem;}
+.topic-card{background:var(--surface-2);border:1.5px solid var(--border);border-radius:var(--radius-lg);padding:.875rem .875rem .75rem;cursor:pointer;transition:all var(--t);box-shadow:var(--sh-sm);}
+.topic-card:hover{border-color:var(--border-accent);box-shadow:var(--sh-md);}
+.topic-card.sel{border-color:var(--crimson);background:var(--bg-accent);box-shadow:0 0 0 3px rgba(139,26,46,.08);}
+.topic-card i{font-size:20px;color:var(--fill-accent);display:block;margin-bottom:7px;}
+.topic-card .tn{font-size:12px;font-weight:700;color:var(--text-primary);line-height:1.35;}
+
+/* BUTTONS */
+.btn-p{background:linear-gradient(135deg,var(--crimson) 0%,var(--crimson-soft) 100%);color:#fff;border:none;padding:11px 22px;border-radius:var(--radius);font-size:14px;font-weight:700;cursor:pointer;font-family:var(--font-sans);display:inline-flex;align-items:center;gap:7px;transition:opacity var(--t),transform .1s,box-shadow var(--t);box-shadow:0 4px 12px rgba(139,26,46,.3);letter-spacing:.01em;}
+.btn-p:hover{opacity:.9;box-shadow:0 6px 18px rgba(139,26,46,.4);}
+.btn-p:active{transform:scale(.98);}
+.btn-p:disabled{opacity:.4;cursor:not-allowed;box-shadow:none;}
+.btn-s{background:var(--surface-2);color:var(--text-primary);border:1px solid var(--border-strong);padding:9px 15px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);display:inline-flex;align-items:center;gap:6px;transition:background var(--t),border-color var(--t),box-shadow var(--t);box-shadow:var(--sh-sm);}
+.btn-s:hover{background:var(--surface-1);border-color:var(--border-stronger);box-shadow:var(--sh-md);}
+.btn-w{width:100%;justify-content:center;}
+
+/* CONFIG */
+.config-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+.config-row:last-child{margin-bottom:0;}
+.clbl{font-size:13px;color:var(--text-secondary);font-weight:600;min-width:140px;}
+select{font-size:13px;padding:9px 13px;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--surface-1);color:var(--text-primary);font-family:var(--font-sans);font-weight:500;cursor:pointer;}
+select:focus{outline:none;border-color:var(--crimson);}
+
+/* QUIZ */
+.qprog{display:flex;align-items:center;gap:12px;margin-bottom:1rem;}
+.qprog-txt{font-size:12px;color:var(--text-secondary);font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums;}
+.qtext{font-size:15px;font-weight:600;color:var(--text-primary);line-height:1.75;margin-bottom:1.1rem;}
+.options{display:flex;flex-direction:column;gap:9px;margin-bottom:1rem;}
+.opt{background:var(--surface-1);border:1.5px solid var(--border);border-left:4px solid transparent;border-radius:var(--radius);padding:12px 15px;cursor:pointer;font-size:14px;color:var(--text-primary);text-align:left;font-family:var(--font-sans);transition:all var(--t);display:flex;align-items:flex-start;gap:11px;line-height:1.55;font-weight:500;}
+.opt:hover:not([disabled]){border-left-color:var(--crimson);border-color:var(--border-accent);background:var(--bg-accent);}
+.opt.correct{border-color:var(--border-success);border-left:4px solid var(--fill-success);background:var(--bg-success);color:var(--text-success);}
+.opt.incorrect{border-color:var(--border-danger);border-left:4px solid var(--fill-danger);background:var(--bg-danger);color:var(--text-danger);}
+.opt.reveal{border-left:4px solid var(--fill-success);border-color:var(--border-success);background:var(--bg-success);color:var(--text-success);opacity:.6;}
+.opt-l{font-weight:800;font-size:11px;min-width:22px;height:22px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);border:1px solid var(--border-strong);border-radius:6px;flex-shrink:0;margin-top:1px;}
+.opt.correct .opt-l{background:var(--fill-success);color:#fff;border-color:transparent;}
+.opt.incorrect .opt-l{background:var(--fill-danger);color:#fff;border-color:transparent;}
+.opt.reveal .opt-l{background:var(--fill-success);color:#fff;border-color:transparent;opacity:.7;}
+.fb-box{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius);padding:1rem 1.1rem;margin-bottom:1rem;}
+.fb-hdr{font-size:14px;font-weight:700;margin-bottom:8px;display:flex;align-items:center;gap:6px;}
+.fb-txt{font-size:14px;color:var(--text-secondary);line-height:1.75;}
+
+/* LOADING */
+.dots{display:inline-flex;gap:5px;align-items:center;}
+.dots span{width:7px;height:7px;border-radius:50%;background:var(--fill-accent);animation:db 1.2s infinite;}
+.dots span:nth-child(2){animation-delay:.2s;}
+.dots span:nth-child(3){animation-delay:.4s;}
+@keyframes db{0%,80%,100%{transform:translateY(0);opacity:.5;}40%{transform:translateY(-7px);opacity:1;}}
+.loading-state{text-align:center;padding:3.5rem 1rem;}
+.loading-state p{margin-top:1rem;font-size:14px;color:var(--text-secondary);font-weight:500;}
+
+/* RESULTS */
+.score-wrap{text-align:center;padding:1.5rem 1rem;}
+.score-circle{width:104px;height:104px;border-radius:50%;background:linear-gradient(135deg,var(--navy),var(--navy-light));border:3px solid var(--gold);display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1rem;box-shadow:0 8px 24px rgba(15,27,45,.25);}
+.score-n{font-size:28px;font-weight:800;color:var(--gold-light);line-height:1;}
+.score-l{font-size:10px;color:rgba(255,255,255,.6);margin-top:2px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.stat-row{display:flex;justify-content:center;gap:2rem;margin-bottom:1.25rem;}
+.stat-v{font-size:22px;font-weight:800;color:var(--text-primary);text-align:center;}
+.stat-d{font-size:11px;color:var(--text-muted);text-align:center;font-weight:600;text-transform:uppercase;letter-spacing:.06em;}
+.section-divider{border:none;border-top:1px solid var(--border);margin:1.1rem 0;}
+.review-item{background:var(--surface-1);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;margin-bottom:8px;}
+.review-q{font-size:13px;font-weight:600;color:var(--text-primary);margin-bottom:3px;line-height:1.45;}
+.review-m{font-size:11px;color:var(--text-muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;}
+.badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:6px;font-size:10px;font-weight:800;letter-spacing:.03em;margin-right:6px;text-transform:uppercase;}
+.b-ok{background:var(--bg-success);color:var(--text-success);border:1px solid var(--border-success);}
+.b-no{background:var(--bg-danger);color:var(--text-danger);border:1px solid var(--border-danger);}
+.b-pro{background:var(--bg-pro);color:var(--text-pro);}
+
+/* FLASHCARDS */
+.flash-wrap{perspective:900px;margin-bottom:1rem;cursor:pointer;user-select:none;}
+.flash-inner{position:relative;min-height:clamp(210px,42vw,270px);transition:transform .55s cubic-bezier(.4,0,.2,1);transform-style:preserve-3d;}
+.flash-inner.flipped{transform:rotateY(180deg);}
+.flash-face{background:var(--surface-2);border:1px solid var(--border);border-radius:20px;padding:1.75rem;backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:clamp(210px,42vw,270px);position:absolute;inset:0;box-shadow:var(--sh-md);}
+.flash-face:first-child{position:relative;border-top:4px solid var(--crimson);}
+.flash-back{position:absolute;inset:0;transform:rotateY(180deg);background:linear-gradient(135deg,var(--navy),var(--navy-light));border:1px solid rgba(201,168,76,.2);border-radius:20px;border-top:4px solid var(--gold);}
+.flash-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;margin-bottom:.875rem;}
+.flash-face:first-child .flash-tag{color:var(--text-muted);}
+.flash-back .flash-tag{color:rgba(201,168,76,.7);}
+.flash-q{font-size:clamp(14px,2.2vw,16px);font-weight:700;color:var(--text-primary);line-height:1.55;}
+.flash-back .flash-a{font-size:clamp(13px,2vw,15px);color:#D8E8D0;line-height:1.65;font-weight:500;}
+.flash-hint{font-size:11px;color:var(--text-muted);margin-top:.875rem;display:flex;align-items:center;gap:4px;}
+.flash-nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:1rem;}
+.flash-cnt{font-size:13px;color:var(--text-secondary);font-weight:700;text-align:center;flex:1;font-variant-numeric:tabular-nums;}
+.flash-btns{display:flex;gap:8px;justify-content:center;}
+
+/* STATS BARS */
+.chart-bar-wrap{display:flex;flex-direction:column;gap:11px;}
+.chart-row{display:flex;align-items:center;gap:10px;}
+.chart-lbl{font-size:11px;font-weight:600;color:var(--text-secondary);width:110px;flex-shrink:0;text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.chart-track{flex:1;height:22px;background:var(--surface-1);border-radius:6px;overflow:hidden;border:1px solid var(--border);min-width:0;}
+.chart-fill{height:100%;border-radius:6px;transition:width .65s ease;}
+.chart-val{font-size:11px;font-weight:700;color:var(--text-muted);min-width:36px;text-align:right;flex-shrink:0;font-variant-numeric:tabular-nums;}
+@media(max-width:400px){.chart-lbl{width:72px;font-size:10px;}}
+
+/* TUTOR */
+.chat-header{display:flex;align-items:center;gap:10px;margin-bottom:1rem;padding-bottom:1rem;border-bottom:1px solid var(--border);}
+.chat-avatar{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--navy),var(--navy-light));border:1px solid rgba(201,168,76,.3);display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.chat-avatar i{font-size:20px;color:var(--gold);}
+.chat-hname{font-size:14px;font-weight:700;color:var(--text-primary);}
+.chat-hsub{font-size:11px;color:var(--text-muted);font-weight:500;}
+.chat-status{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;color:#1A5E3A;background:#EBF5EF;border-radius:10px;padding:2px 8px;margin-left:auto;flex-shrink:0;}
+.chat-status::before{content:'';width:6px;height:6px;border-radius:50%;background:#2A8A58;}
+.chat-area{display:flex;flex-direction:column;gap:10px;min-height:240px;max-height:48vh;overflow-y:auto;padding:2px;scroll-behavior:smooth;}
+.chat-msg{max-width:88%;padding:11px 15px;border-radius:14px;font-size:14px;line-height:1.65;font-weight:500;}
+.chat-msg.assistant{background:var(--surface-1);border:1px solid var(--border);color:var(--text-primary);align-self:flex-start;border-bottom-left-radius:4px;}
+.chat-msg.user{background:linear-gradient(135deg,var(--navy),var(--navy-light));color:#fff;align-self:flex-end;border-bottom-right-radius:4px;font-size:13px;}
+.chat-ir{display:flex;gap:8px;margin-top:12px;}
+.chat-ir input{flex:1;font-size:14px;padding:11px 14px;border-radius:var(--radius);border:1px solid var(--border-strong);background:var(--surface-1);color:var(--text-primary);font-family:var(--font-sans);font-weight:500;transition:border-color var(--t),box-shadow var(--t);}
+.chat-ir input:focus{outline:none;border-color:var(--crimson);box-shadow:0 0 0 3px rgba(139,26,46,.1);}
+.chat-ir input::placeholder{color:var(--text-muted);}
+.qchips{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px;}
+.qchip{background:var(--surface-2);border:1px solid var(--border-strong);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--text-secondary);cursor:pointer;font-family:var(--font-sans);font-weight:600;transition:all var(--t);}
+.qchip:hover{border-color:var(--border-accent);color:var(--fill-accent);background:var(--bg-accent);}
+.done-state{text-align:center;padding:2.5rem 1rem;}
+.done-icon{font-size:52px;color:var(--fill-success);display:block;margin-bottom:14px;}
+.done-title{font-size:18px;font-weight:800;margin-bottom:8px;color:var(--text-primary);}
+.done-sub{font-size:14px;color:var(--text-secondary);margin-bottom:1.5rem;line-height:1.6;}
+@media(max-width:480px){.hero{padding:1.25rem 1.25rem 1rem;}.brand-name{font-size:19px;}.metric-val{font-size:22px;}}
+</style>
+</head>
+<body>
+<h2 class="sr-only">Hematomed — Plataforma educativa de Hematología</h2>
+
+<div class="app-shell">
+
+  <!-- TOP APP BAR (fijo, visible solo en Inicio) -->
+  <header class="topbar" id="topbar">
+    <div class="topbar-greet">
+      <span class="topbar-hello">Bienvenido</span>
+      <span class="topbar-name">Hematomed</span>
+    </div>
+    <div class="theme-row">
+      <button class="theme-btn active" id="btn-day" onclick="setTheme('day')" title="Día" aria-label="Modo día">☀️</button>
+      <button class="theme-btn" id="btn-night" onclick="setTheme('night')" title="Noche" aria-label="Modo noche">🌙</button>
+      <button class="theme-btn" id="btn-exam" onclick="setTheme('exam')" title="Examen" aria-label="Modo examen">📋</button>
+    </div>
+    <div id="streak-el" style="display:none" class="streak-pill"><i class="ti ti-flame"></i><span id="streak-txt">0</span></div>
+  </header>
+
+  <!-- SCROLLABLE CONTENT AREA — único lugar donde hay scroll -->
+  <main class="scroll-area">
+    <div class="app">
+
+    <!-- INICIO -->
+    <div id="panel-inicio" class="panel active" role="tabpanel">
+      <button class="hero-cta" onclick="switchTab('quiz')">
+        <div class="hero-cta-icon"><i class="ti ti-player-play"></i></div>
+        <div class="hero-cta-text">
+          <div class="hero-cta-title">Generar nuevo quiz</div>
+          <div class="hero-cta-sub" id="hero-cta-sub">Pon a prueba tus conocimientos con IA</div>
+        </div>
+        <i class="ti ti-chevron-right hero-cta-arrow"></i>
+      </button>
+
+      <div class="metric-grid" id="home-metrics"></div>
+      <div id="home-empty" style="display:none">
+        <div class="empty-state">
+          <div class="empty-icon"><i class="ti ti-microscope"></i></div>
+          <div class="empty-title">Comienza tu primera sesión</div>
+          <div class="empty-sub">Haz un quiz o explora flashcards para ver tu progreso aquí. El sistema registra tus fortalezas por tema.</div>
+          <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+            <button class="btn-p" onclick="switchTab('quiz')"><i class="ti ti-player-play"></i>Hacer un quiz</button>
+            <button class="btn-s" onclick="switchTab('tutor')"><i class="ti ti-robot"></i>Hablar con el tutor</button>
+          </div>
+        </div>
+      </div>
+      <div id="home-progress" style="display:none">
+        <div class="slabel" style="margin-top:.25rem">Progreso por tema</div>
+        <div class="card" style="margin-bottom:1rem"><div class="chart-bar-wrap" id="home-chart"></div></div>
+      </div>
+      <div class="slabel">Módulos clínicos</div>
+      <div class="module-list" id="temas-list"></div>
+    </div>
+
+    <!-- QUIZ -->
+<div id="panel-quiz" class="panel" role="tabpanel">
+  <div id="qv-config">
+    <div class="slabel">Selecciona temas (opcional)</div>
+    <div class="topic-grid" id="topic-grid"></div>
+    <div class="card" style="margin-bottom:1rem">
+      <div class="config-row"><span class="clbl">Número de preguntas</span><select id="num-q"><option value="3">3 preguntas</option><option value="5" selected>5 preguntas</option><option value="10">10 preguntas</option></select></div>
+      <div class="config-row"><span class="clbl">Dificultad</span><select id="diff"><option value="basico">Básico</option><option value="intermedio" selected>Intermedio</option><option value="avanzado">Avanzado</option></select></div>
+      <div class="config-row" style="margin-bottom:0"><span class="clbl">Tipo de preguntas</span><select id="qtype"><option value="mixto">Mixto</option><option value="diagnostico">Diagnóstico</option><option value="tratamiento">Tratamiento</option><option value="fisiopatologia">Fisiopatología</option></select></div>
+    </div>
+    <button class="btn-p btn-w" onclick="startQuiz()"><i class="ti ti-sparkles"></i>Generar cuestionario con IA</button>
+  </div>
+  <div id="qv-loading" class="loading-state" style="display:none">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <p id="qload-msg">Generando preguntas...</p>
+  </div>
+  <div id="qv-active" style="display:none">
+    <div class="qprog"><div class="progress-bar" style="flex:1"><div class="progress-fill pf-accent" id="qpbar" style="width:0%"></div></div><span class="qprog-txt" id="qptxt">1/5</span></div>
+    <div class="card">
+      <div class="qtext" id="qtext"></div>
+      <div class="options" id="qopts"></div>
+      <div id="qfb" style="display:none">
+        <div class="fb-box"><div class="fb-hdr" id="fbhdr"></div><div class="fb-txt" id="fbtxt"></div></div>
+        <button class="btn-p btn-w" onclick="nextQ()"><span id="nxt-txt">Siguiente</span><i class="ti ti-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+  <div id="qv-results" style="display:none">
+    <div class="card">
+      <div class="score-wrap">
+        <div class="score-circle"><div class="score-n" id="res-pct">-</div><div class="score-l">puntuación</div></div>
+        <div style="font-size:18px;font-weight:800;margin-bottom:5px" id="res-title"></div>
+        <div style="font-size:14px;color:var(--text-secondary);margin-bottom:1.25rem" id="res-sub"></div>
+        <div class="stat-row">
+          <div><div class="stat-v" id="res-ok">-</div><div class="stat-d">correctas</div></div>
+          <div><div class="stat-v" id="res-no">-</div><div class="stat-d">incorrectas</div></div>
+          <div><div class="stat-v" id="res-tot">-</div><div class="stat-d">total</div></div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+          <button class="btn-p" onclick="resetQuiz()"><i class="ti ti-refresh"></i>Nuevo quiz</button>
+          <button class="btn-s" onclick="switchTab('flash')"><i class="ti ti-cards"></i>Flashcards</button>
+          <button class="btn-s" onclick="switchTab('stats')"><i class="ti ti-chart-bar"></i>Stats</button>
+        </div>
+      </div>
+      <hr class="section-divider">
+      <div class="slabel">Revisión de respuestas</div>
+      <div id="res-review"></div>
+    </div>
+  </div>
+</div>
+
+<!-- FLASHCARDS -->
+<div id="panel-flash" class="panel" role="tabpanel">
+  <div id="fv-config">
+    <div class="slabel">Tema para flashcards</div>
+    <div class="topic-grid" id="flash-topic-grid" style="margin-bottom:1rem"></div>
+    <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
+      <button class="btn-p" onclick="startFlash('nuevas')"><i class="ti ti-sparkles"></i>Nuevas</button>
+      <button class="btn-s" onclick="startFlash('repasar')"><i class="ti ti-refresh"></i>Repasar difíciles</button>
+      <button class="btn-s" onclick="startFlash('todas')"><i class="ti ti-cards"></i>Todas</button>
+    </div>
+    <div class="card"><div style="font-size:13px;color:var(--text-secondary);line-height:1.7">Tarjetas generadas con IA basadas en evidencia clínica. Califica cada una para que el sistema priorice los temas que necesitas repasar.</div></div>
+  </div>
+  <div id="fv-loading" class="loading-state" style="display:none">
+    <div class="dots"><span></span><span></span><span></span></div>
+    <p>Generando flashcards con IA...</p>
+  </div>
+  <div id="fv-active" style="display:none">
+    <div class="flash-nav">
+      <button class="btn-s" onclick="prevFlash()" aria-label="Anterior"><i class="ti ti-arrow-left"></i></button>
+      <div class="flash-cnt" id="flash-cnt">1 / 10</div>
+      <button class="btn-s" onclick="nextFlash()" aria-label="Siguiente"><i class="ti ti-arrow-right"></i></button>
+    </div>
+    <div class="progress-bar" style="margin-bottom:1rem"><div class="progress-fill pf-accent" id="flash-pbar" style="width:0%"></div></div>
+    <div class="flash-wrap" onclick="flipCard()" role="button" aria-label="Voltear tarjeta">
+      <div class="flash-inner" id="flash-inner">
+        <div class="flash-face">
+          <div class="flash-tag" id="flash-tema-lbl">tema</div>
+          <div class="flash-q" id="flash-front">Cargando...</div>
+          <div class="flash-hint"><i class="ti ti-hand-click"></i>Toca para ver la respuesta</div>
+        </div>
+        <div class="flash-face flash-back">
+          <div class="flash-tag">Respuesta</div>
+          <div class="flash-a" id="flash-back-txt"></div>
+        </div>
+      </div>
+    </div>
+    <div class="flash-btns" id="flash-rating" style="display:none">
+      <button class="btn-s" style="color:var(--text-danger);border-color:var(--border-danger)" onclick="rateCard('dificil')"><i class="ti ti-x"></i>Difícil</button>
+      <button class="btn-s" onclick="rateCard('bien')"><i class="ti ti-minus"></i>Bien</button>
+      <button class="btn-s" style="color:var(--text-success);border-color:var(--border-success)" onclick="rateCard('facil')"><i class="ti ti-check"></i>Fácil</button>
+    </div>
+  </div>
+  <div id="fv-done" class="done-state" style="display:none">
+    <i class="ti ti-circle-check done-icon"></i>
+    <div class="done-title">Sesión completada</div>
+    <div class="done-sub" id="flash-done-msg"></div>
+    <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
+      <button class="btn-p" onclick="resetFlash()"><i class="ti ti-refresh"></i>Nueva sesión</button>
+      <button class="btn-s" onclick="switchTab('quiz')"><i class="ti ti-help-circle"></i>Hacer un quiz</button>
+    </div>
+  </div>
+</div>
+
+<!-- ESTADÍSTICAS -->
+<div id="panel-stats" class="panel" role="tabpanel">
+  <div class="metric-grid" id="stats-metrics"></div>
+  <div class="slabel">Rendimiento por tema</div>
+  <div class="card" style="margin-bottom:1rem"><div class="chart-bar-wrap" id="stats-chart"></div></div>
+  <div class="slabel">Historial de sesiones (últimas 10)</div>
+  <div class="card" style="margin-bottom:1rem"><div id="session-list"></div></div>
+  <button class="btn-s" style="color:var(--text-danger)" onclick="resetStats()"><i class="ti ti-trash"></i>Reiniciar estadísticas</button>
+</div>
+
+<!-- TUTOR -->
+<div id="panel-tutor" class="panel" role="tabpanel">
+  <div class="card" style="margin-bottom:1rem">
+    <div class="chat-header">
+      <div class="chat-avatar"><i class="ti ti-robot"></i></div>
+      <div><div class="chat-hname">Tutor Hematología</div><div class="chat-hsub">Basado en evidencia clínica</div></div>
+      <div class="chat-status">En línea</div>
+    </div>
+    <div class="chat-area" id="chat-area">
+      <div class="chat-msg assistant">Hola, soy tu tutor de Hematología basado en evidencia clínica. Puedes preguntarme sobre anemias, leucemias, mieloma, coagulación, linfomas, anticoagulantes, trastornos plaquetarios, trombosis y más. ¿Qué quieres aprender hoy?</div>
+    </div>
+    <div class="chat-ir">
+      <input type="text" id="chat-inp" placeholder="Pregunta sobre hematología..." onkeydown="if(event.key==='Enter')sendChat()" autocomplete="off">
+      <button class="btn-p" onclick="sendChat()" aria-label="Enviar"><i class="ti ti-send"></i></button>
+    </div>
+  </div>
+  <div class="slabel">Preguntas frecuentes</div>
+  <div class="qchips">
+    <button class="qchip" onclick="qa('Criterios diagnósticos del mieloma múltiple')">Mieloma múltiple</button>
+    <button class="qchip" onclick="qa('Fases de la leucemia mieloide crónica y tratamiento con TKI')">LMC y TKI</button>
+    <button class="qchip" onclick="qa('Clasificación de las anemias por fisiopatología')">Anemias</button>
+    <button class="qchip" onclick="qa('Diferencia entre PTI y PTT')">PTI vs PTT</button>
+    <button class="qchip" onclick="qa('Manejo de la TVP y embolia pulmonar con anticoagulantes directos')">TEV y ACOD</button>
+    <button class="qchip" onclick="qa('Síndrome de lisis tumoral: criterios y manejo')">Lisis tumoral</button>
+    <button class="qchip" onclick="qa('Estadificación Ann Arbor del linfoma de Hodgkin')">Linfoma Hodgkin</button>
+  </div>
+</div>
+
+    </div><!-- /.app -->
+  </main><!-- /.scroll-area -->
+
+  <!-- BOTTOM NAVIGATION (fijo) -->
+  <nav class="bottombar">
+    <button class="nav-item active" data-tab="inicio" onclick="switchTab('inicio')"><i class="ti ti-home-2"></i><span>Inicio</span></button>
+    <button class="nav-item" data-tab="quiz" onclick="switchTab('quiz')"><i class="ti ti-help-circle"></i><span>Quiz</span></button>
+    <button class="nav-item" data-tab="flash" onclick="switchTab('flash')"><i class="ti ti-cards"></i><span>Cards</span></button>
+    <button class="nav-item" data-tab="stats" onclick="switchTab('stats')"><i class="ti ti-chart-bar"></i><span>Stats</span></button>
+    <button class="nav-item" data-tab="tutor" onclick="switchTab('tutor')"><i class="ti ti-robot"></i><span>Tutor</span></button>
+  </nav>
+
+</div><!-- /.app-shell -->
+<script>
+function setTheme(t){document.body.classList.remove('night','exam');if(t==='night')document.body.classList.add('night');if(t==='exam')document.body.classList.add('exam');document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));document.getElementById('btn-'+t).classList.add('active');try{localStorage.setItem('hemato_theme',t);}catch(e){}}
+(function(){try{const t=localStorage.getItem('hemato_theme');if(t)setTheme(t);}catch(e){}})();
+
+const TEMAS=[
+  {id:'celulas_madre',name:'Células madre hematopoyéticas',icon:'ti-dna',sub:'Anemia aplásica · SMD · NMP · Leucemias',cont:'Células madre hematopoyéticas: anemia aplásica (trasplante alogénico <50 años, inmunosupresión globulina antitimocito+ciclosporina >50 años), aplasia pura serie roja (parvovirus B19, timoma, autoinmune), síndromes mielodisplásicos (clasificación OMS, azacitidina/decitabina alto riesgo, lenalidomida deleción 5q), LMC (BCR-ABL t(9;22), TKI: imatinib/dasatinib/nilotinib), policitemia vera (JAK2 V617F >95%, flebotomía+hidroxiurea), trombocitemia esencial (JAK2 50%, hidroxiurea >60 años), mielofibrosis (ruxolitinib, trasplante único curación), LMA (>20% blastos, 7+3), LLA (cromosoma Filadelfia adultos).'},
+  {id:'mieloma',name:'Mieloma múltiple y afines',icon:'ti-activity',sub:'GMSI · Mieloma · Amiloidosis · Waldenström',cont:'GMSI (<3g/dL, <10% células plasmáticas, sin daño orgánico, 1%/año progresión), mieloma múltiple (CRAB: hipercalcemia, insuficiencia renal, anemia, lesiones óseas; biomarcadores: >60% plasmáticas, FLC>100; VRd+trasplante autólogo <70 años; ISS estadificación), amiloidosis AL (cadenas ligeras, biopsia grasa abdominal), Waldenström (IgM, hiperviscosidad, rituximab+quimioterapia).'},
+  {id:'eritrocitos',name:'Trastornos eritrocitarios',icon:'ti-droplet',sub:'Anemias · Hemólisis · Déficits · Talasemia',cont:'VCM micro<80/normo80-100/macro>100; reticulocitos hiporegenerativa vs hemolítica. Déficit hierro (ferritina baja, TIBC alta, oral o IV). Anemia crónica (hepcidina elevada). Déficit B12 (MMA elevado, neuropatía, IM mensual). Talasemia alfa (cromosoma 16) y beta (electroforesis). Drepanocitosis (hidroxiurea HbF). G6PD (Heinz bodies, evitar oxidantes). AHAI caliente IgG (Coombs+, prednisona). PTT (ADAMTS13 baja, plasmaféresis urgente). Hemocromatosis (HFE C282Y, flebotomías).'},
+  {id:'plaquetas',name:'Trastornos plaquetarios',icon:'ti-circle-plus',sub:'Trombocitopenia · PTI · PTT · TIH',cont:'PTI (diagnóstico exclusión, prednisona primera línea, IGIV urgencias, romiplostim/eltrombopag crónico, esplenectomía). PTT (ADAMTS13<10%, plasmaféresis emergencia, NO transfundir plaquetas). TIH (score 4T, suspender heparina, argatrobán/fondaparinux, NO warfarina hasta >150.000). HELLP (hemólisis+transaminasas+plaquetas bajas, terminación embarazo).'},
+  {id:'coagulacion',name:'Trastornos hemorrágicos',icon:'ti-bandage',sub:'Hemostasia · Hemofilia · Von Willebrand · CID',cont:'TP prolongado: factor VII, warfarina, déficit VitK. TTPa prolongado: VIII/IX/XI, heparina, inhibidor lúpico. Ambos: CID, hepatopatía. Hemofilia A (FVIII, emicizumab). Hemofilia B (FIX). VWF tipo 1 (DDAVP), tipo 3 (concentrado VWF/FVIII). CID (sepsis primera causa, tratar causa). Hemofilia adquirida (anti-FVIII, FEIBA/rFVIIa).'},
+  {id:'transfusion',name:'Medicina transfusional',icon:'ti-vaccine-bottle',sub:'Grupos sanguíneos · Componentes · Reacciones',cont:'GRC (umbral Hb<7-8; cada unidad +1 g/dL). Plaquetas (<10.000 profiláctico, <50.000 cirugía; 1 aféresis=6 pool). PFC (déficit múltiples factores). Crioprecipitado (fibrinógeno<150, FVIII+FVW). Hemólisis aguda (error ABO, EMERGENCIA: detener+hidratación). TRALI (anti-HLA donante, soporte ventilatorio). TACO (sobrecarga, diuréticos). Irradiación en inmunocomprometidos.'},
+  {id:'trombosis',name:'Trastornos trombóticos',icon:'ti-urgent',sub:'TVP · TEP · Trombofilia · Anticoagulantes',cont:'Factor V Leiden (R506Q, x3-8 heterocigoto). Protrombina G20210A (x2-3). SAF (trombosis+anticuerpos antifosfolípidos persistentes, warfarina INR 2-3 indefinida). TVP/TEP (ACOD primera línea: rivaroxabán/apixabán; 3 meses factor reversible, indefinido SAF/cáncer). HNF (TTPa 60-100s, protamina antídoto). Warfarina (INR 2-3, VitK+CCP). Andexanet alfa (anti-Xa). Idarucizumab (dabigatrán).'},
+  {id:'embarazo',name:'Hematología en el embarazo',icon:'ti-heart',sub:'Anemia gestacional · Trombocitopenia · TEV',cont:'Anemia fisiológica (Hb<11 normal primer trimestre, suplementar hierro+folato). Drepanocitosis (hidroxiurea CONTRAINDICADA, transfusiones profilácticas). Trombocitopenia gestacional benigna (>70.000, no tratar). PTI embarazo (prednisona si <30.000, IGIV urgente). HELLP (hemólisis+AST/ALT>70+plaquetas<100.000, terminación). TEV gestacional (HBPM toda gestación+6 semanas postparto, NO warfarina primer trimestre, SAF: AAS 81mg+HBPM).'},
+  {id:'linfomas',name:'Neoplasias linfoides',icon:'ti-microscope',sub:'LNH · Hodgkin · LLC · Linfomas B y T',cont:'Hodgkin (Reed-Sternberg CD15+/CD30+, Ann Arbor I-IV, síntomas B, ABVD, >85% curación). Folicular (t(14;18), incurable salvo trasplante, R-CHOP). MALT gástrico (H.pylori: erradicación primera línea). DLBCL (R-CHOP curativo 60-70%, CAR-T en refractario). Burkitt (MYC t(8;14), urgencia oncológica). Manto (t(11;14), ibrutinib/venetoclax). LLC (ibrutinib/venetoclax+obinutuzumab avanzados). HCL (BRAF V600E, cladribina).'},
+];
+
+const ST_KEY='hemato_stats_v3';
+function loadStats(){try{return JSON.parse(localStorage.getItem(ST_KEY))||initStats();}catch(e){return initStats();}}
+function initStats(){return{totalQ:0,totalOk:0,streak:0,lastDate:'',sessions:[],byTema:{},flashRatings:{}};}
+function saveStats(s){try{localStorage.setItem(ST_KEY,JSON.stringify(s));}catch(e){}}
+let STATS=loadStats(),selTopics=[],questions=[],curQ=0,score=0,answered=[],flashCards=[],curFlash=0,flashFlipped=false,flashSelTopic='',chatHistory=[];
+
+function updateStreak(){
+  const today=new Date().toDateString();
+  if(STATS.lastDate!==today&&STATS.totalQ>0){const y=new Date(Date.now()-86400000).toDateString();if(STATS.lastDate===y)STATS.streak=(STATS.streak||0)+1;}
+  const el=document.getElementById('streak-el');
+  if((STATS.streak||0)>=2){el.style.display='inline-flex';document.getElementById('streak-txt').textContent=STATS.streak+' días';}
+}
+
+function switchTab(tab){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  const navBtn=document.querySelector('.nav-item[data-tab="'+tab+'"]');
+  if(navBtn) navBtn.classList.add('active');
+  document.getElementById('panel-'+tab).classList.add('active');
+  const scrollArea=document.querySelector('.scroll-area');
+  if(scrollArea) scrollArea.scrollTop=0;
+  if(tab==='inicio')renderHome();
+  if(tab==='stats')renderStats();
+}
+
+function renderTemasBars(cid){
+  const el=document.getElementById(cid);if(!el)return;
+  el.innerHTML=TEMAS.map(t=>{const d=STATS.byTema[t.id]||{q:0,ok:0};const p=d.q>0?Math.round((d.ok/d.q)*100):0;const cls=p>=80?'pf-success':p>=60?'pf-accent':'pf-warning';const lbl=t.name.length>15?t.name.substring(0,14)+'…':t.name;return`<div class="chart-row"><div class="chart-lbl" title="${t.name}">${lbl}</div><div class="chart-track"><div class="chart-fill ${cls}" style="width:${p}%"></div></div><div class="chart-val">${d.q>0?p+'%':'—'}</div></div>`;}).join('');
+}
+
+function renderHome(){
+  const pct=STATS.totalQ>0?Math.round((STATS.totalOk/STATS.totalQ)*100):0,hasData=STATS.totalQ>0;
+  if(hasData){
+    document.getElementById('home-metrics').innerHTML=`<div class="metric"><div class="metric-val">${STATS.totalQ}</div><div class="metric-lbl">Preguntas</div></div><div class="metric"><div class="metric-val">${pct}%</div><div class="metric-lbl">Promedio</div></div><div class="metric"><div class="metric-val">${STATS.sessions.length}</div><div class="metric-lbl">Sesiones</div></div><div class="metric"><div class="metric-val">${STATS.streak||0}</div><div class="metric-lbl">Racha</div></div>`;
+    document.getElementById('home-empty').style.display='none';document.getElementById('home-progress').style.display='block';renderTemasBars('home-chart');
+    document.getElementById('hero-cta-sub').textContent='Continúa donde quedaste';
+  }else{
+    document.getElementById('home-metrics').innerHTML='';document.getElementById('home-empty').style.display='block';document.getElementById('home-progress').style.display='none';
+    document.getElementById('hero-cta-sub').textContent='Pon a prueba tus conocimientos con IA';
+  }
+  document.getElementById('temas-list').innerHTML=TEMAS.map(t=>{
+    const d=STATS.byTema[t.id]||{q:0,ok:0};
+    const p=d.q>0?Math.round((d.ok/d.q)*100):0;
+    const pctLabel=d.q>0?p+'%':'Nuevo';
+    return`<button class="module-row" onclick="qa('Explícame el tema: ${t.name} según evidencia clínica')">
+      <div class="module-icon"><i class="ti ${t.icon}"></i></div>
+      <div class="module-info">
+        <div class="module-name">${t.name}</div>
+        <div class="module-progress-row">
+          <div class="module-progress-track"><div class="module-progress-fill" style="width:${p}%"></div></div>
+          <span class="module-pct">${pctLabel}</span>
+        </div>
+      </div>
+      <i class="ti ti-chevron-right module-chevron"></i>
+    </button>`;
+  }).join('');
+}
+
+function renderTopicGrid(cid,selArr){
+  const el=document.getElementById(cid);if(!el)return;
+  el.innerHTML=TEMAS.map(t=>`<div class="topic-card ${selArr.includes(t.id)?'sel':''}" onclick="toggleTopic('${t.id}','${cid}',this)" role="checkbox" aria-checked="${selArr.includes(t.id)}"><i class="ti ${t.icon}"></i><div class="tn">${t.name}</div></div>`).join('');
+}
+
+function toggleTopic(id,cid,el){
+  if(cid==='topic-grid'){const i=selTopics.indexOf(id);if(i>-1)selTopics.splice(i,1);else selTopics.push(id);el.classList.toggle('sel');el.setAttribute('aria-checked',el.classList.contains('sel'));}
+  else{document.querySelectorAll('#flash-topic-grid .topic-card').forEach(c=>{c.classList.remove('sel');c.setAttribute('aria-checked','false');});el.classList.add('sel');el.setAttribute('aria-checked','true');flashSelTopic=id;}
+}
+
+const LM=['Generando preguntas...','Calibrando dificultad...','Construyendo opciones...','Casi listo...'];
+let lIdx=0,lTimer=null;
+
+async function startQuiz(){
+  const n=parseInt(document.getElementById('num-q').value),diff=document.getElementById('diff').value,qtype=document.getElementById('qtype').value;
+  const temas=selTopics.length>0?TEMAS.filter(t=>selTopics.includes(t.id)):TEMAS;
+  const tema=temas[Math.floor(Math.random()*temas.length)];
+  document.getElementById('qv-config').style.display='none';document.getElementById('qv-loading').style.display='block';
+  lIdx=0;lTimer=setInterval(()=>{document.getElementById('qload-msg').textContent=LM[lIdx%LM.length];lIdx++;},1800);
+  const dD={basico:'básico para internos/residentes primer año',intermedio:'intermedio para residentes de medicina interna',avanzado:'avanzado con casos clínicos complejos'};
+  const qD={mixto:'mixtas de diagnóstico, tratamiento y fisiopatología',diagnostico:'orientadas al diagnóstico diferencial',tratamiento:'orientadas al manejo terapéutico',fisiopatologia:'sobre mecanismos fisiopatológicos'};
+  const prompt=`Eres experto en hematología clínica. Genera exactamente ${n} preguntas de opción múltiple de nivel ${dD[diff]}, tipo ${qD[qtype]} sobre: ${tema.name}.\n\nContenido:\n${tema.cont}\n\nResponde SOLO con JSON válido sin texto adicional:\n{"preguntas":[{"pregunta":"texto","opciones":["A. texto","B. texto","C. texto","D. texto"],"correcta":0,"explicacion":"explicación clínica 40-80 palabras","tema":"${tema.id}"}]}\n\nEn español. Opciones plausibles, una sola correcta.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:4000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();clearInterval(lTimer);
+    let txt=d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const p=JSON.parse(txt);questions=p.preguntas;curQ=0;score=0;answered=[];
+    document.getElementById('qv-loading').style.display='none';document.getElementById('qv-active').style.display='block';renderQ();
+  }catch(e){clearInterval(lTimer);document.getElementById('qv-loading').style.display='none';document.getElementById('qv-config').style.display='block';alert('Error generando preguntas. Intenta de nuevo.');}
+}
+
+function renderQ(){
+  const q=questions[curQ];
+  document.getElementById('qpbar').style.width=Math.round((curQ/questions.length)*100)+'%';
+  document.getElementById('qptxt').textContent=(curQ+1)+'/'+questions.length;
+  document.getElementById('qtext').textContent=q.pregunta;
+  document.getElementById('qopts').innerHTML=q.opciones.map((o,i)=>`<button class="opt" onclick="answerQ(${i})"><span class="opt-l">${String.fromCharCode(65+i)}</span>${o.replace(/^[A-D]\.\s*/,'')}</button>`).join('');
+  document.getElementById('qfb').style.display='none';
+}
+
+function answerQ(idx){
+  document.querySelectorAll('.opt').forEach(b=>b.disabled=true);
+  const q=questions[curQ],right=idx===q.correcta;
+  if(right)score++;
+  const tema=q.tema||'General';
+  answered.push({q:q.pregunta,ok:right,tema});
+  STATS.totalQ++;if(right)STATS.totalOk++;
+  STATS.byTema[tema]=STATS.byTema[tema]||{q:0,ok:0};STATS.byTema[tema].q++;if(right)STATS.byTema[tema].ok++;
+  STATS.lastDate=new Date().toDateString();saveStats(STATS);updateStreak();
+  const opts=document.querySelectorAll('.opt');
+  opts[idx].classList.add(right?'correct':'incorrect');if(!right)opts[q.correcta].classList.add('reveal');
+  document.getElementById('fbhdr').innerHTML=right?`<i class="ti ti-circle-check" style="color:var(--fill-success);font-size:18px"></i><span style="color:var(--text-success)">Correcto</span>`:`<i class="ti ti-circle-x" style="color:var(--fill-danger);font-size:18px"></i><span style="color:var(--text-danger)">Incorrecto</span>`;
+  document.getElementById('fbtxt').textContent=q.explicacion;
+  document.getElementById('nxt-txt').textContent=curQ<questions.length-1?'Siguiente pregunta':'Ver resultados';
+  document.getElementById('qfb').style.display='block';
+}
+
+function nextQ(){curQ++;if(curQ<questions.length)renderQ();else showResults();}
+
+function showResults(){
+  document.getElementById('qv-active').style.display='none';document.getElementById('qv-results').style.display='block';
+  const pct=Math.round((score/questions.length)*100);
+  document.getElementById('res-pct').textContent=pct+'%';document.getElementById('res-ok').textContent=score;document.getElementById('res-no').textContent=questions.length-score;document.getElementById('res-tot').textContent=questions.length;
+  for(const [m,t,s] of[[80,'Excelente dominio clínico','Continúa con los temas más difíciles.'],[60,'Buen desempeño','Refuerza los temas con errores usando flashcards.'],[0,'Sigue practicando','Usa el tutor para los conceptos difíciles.']]){if(pct>=m){document.getElementById('res-title').textContent=t;document.getElementById('res-sub').textContent=s;break;}}
+  STATS.sessions.unshift({date:new Date().toLocaleDateString('es-CO'),score:pct,total:questions.length,ok:score});
+  if(STATS.sessions.length>10)STATS.sessions=STATS.sessions.slice(0,10);saveStats(STATS);
+  document.getElementById('res-review').innerHTML=answered.map(a=>`<div class="review-item"><div class="review-q"><span class="badge ${a.ok?'b-ok':'b-no'}">${a.ok?'✓':'✗'}</span>${a.q.substring(0,90)}${a.q.length>90?'...':''}</div><div class="review-m">Tema: ${a.tema}</div></div>`).join('');
+}
+
+function resetQuiz(){questions=[];curQ=0;score=0;answered=[];['qv-results','qv-active','qv-loading'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('qv-config').style.display='block';}
+
+async function startFlash(mode){
+  const topId=flashSelTopic||(TEMAS[Math.floor(Math.random()*TEMAS.length)].id),tema=TEMAS.find(t=>t.id===topId)||TEMAS[0];
+  document.getElementById('fv-config').style.display='none';document.getElementById('fv-loading').style.display='block';
+  const mD={nuevas:'tarjetas nuevas para aprender conceptos por primera vez',repasar:'repaso de conceptos difíciles con énfasis en puntos clave',todas:'mezcla completa de diagnóstico, tratamiento y fisiopatología'};
+  const prompt=`Eres profesor experto de hematología clínica. Genera exactamente 10 flashcards para ${tema.name} (${mD[mode]}).\n\nContenido:\n${tema.cont}\n\nResponde SOLO con JSON:\n{"cards":[{"frente":"pregunta clínica concisa","reverso":"respuesta con criterios/valores específicos máximo 60 palabras","tema":"${tema.name}"}]}\n\nEn español. Incluye valores numéricos y fármacos.`;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:3000,messages:[{role:'user',content:prompt}]})});
+    const d=await r.json();let txt=d.content.map(b=>b.text||'').join('').replace(/```json|```/g,'').trim();
+    const p=JSON.parse(txt);flashCards=p.cards;curFlash=0;flashFlipped=false;
+    document.getElementById('fv-loading').style.display='none';document.getElementById('fv-active').style.display='block';renderFlash();
+  }catch(e){document.getElementById('fv-loading').style.display='none';document.getElementById('fv-config').style.display='block';alert('Error generando flashcards. Intenta de nuevo.');}
+}
+
+function renderFlash(){
+  const c=flashCards[curFlash];
+  document.getElementById('flash-cnt').textContent=(curFlash+1)+' / '+flashCards.length;
+  document.getElementById('flash-pbar').style.width=Math.round((curFlash/flashCards.length)*100)+'%';
+  document.getElementById('flash-front').textContent=c.frente;document.getElementById('flash-back-txt').textContent=c.reverso;
+  document.getElementById('flash-tema-lbl').textContent=c.tema||'';
+  document.getElementById('flash-inner').classList.remove('flipped');document.getElementById('flash-rating').style.display='none';flashFlipped=false;
+}
+
+function flipCard(){flashFlipped=!flashFlipped;document.getElementById('flash-inner').classList.toggle('flipped',flashFlipped);document.getElementById('flash-rating').style.display=flashFlipped?'flex':'none';}
+
+function rateCard(r){if(!STATS.flashRatings)STATS.flashRatings={};STATS.flashRatings[flashCards[curFlash].frente.substring(0,30)]=r;saveStats(STATS);if(curFlash<flashCards.length-1){curFlash++;renderFlash();}else showFlashDone();}
+function prevFlash(){if(curFlash>0){curFlash--;renderFlash();}}
+function nextFlash(){if(curFlash<flashCards.length-1){curFlash++;renderFlash();}else showFlashDone();}
+
+function showFlashDone(){
+  document.getElementById('fv-active').style.display='none';document.getElementById('fv-done').style.display='block';
+  const dif=Object.values(STATS.flashRatings||{}).filter(r=>r==='dificil').length;
+  document.getElementById('flash-done-msg').textContent=`Completaste las ${flashCards.length} tarjetas.${dif>0?' Tienes '+dif+' tarjetas difíciles para repasar.':' ¡Excelente trabajo!'}`;
+}
+
+function resetFlash(){flashCards=[];curFlash=0;flashFlipped=false;['fv-done','fv-active','fv-loading'].forEach(id=>document.getElementById(id).style.display='none');document.getElementById('fv-config').style.display='block';renderTopicGrid('flash-topic-grid',[]);}
+
+function renderStats(){
+  const pct=STATS.totalQ>0?Math.round((STATS.totalOk/STATS.totalQ)*100):0,best=STATS.sessions.length>0?Math.max(...STATS.sessions.map(s=>s.score)):0;
+  document.getElementById('stats-metrics').innerHTML=`<div class="metric"><div class="metric-val">${STATS.totalQ}</div><div class="metric-lbl">Total preguntas</div></div><div class="metric"><div class="metric-val">${pct}%</div><div class="metric-lbl">Promedio global</div></div><div class="metric"><div class="metric-val">${best}%</div><div class="metric-lbl">Mejor sesión</div></div><div class="metric"><div class="metric-val">${STATS.streak||0}</div><div class="metric-lbl">Racha actual</div></div>`;
+  renderTemasBars('stats-chart');
+  const sl=document.getElementById('session-list');
+  if(STATS.sessions.length===0){sl.innerHTML='<div style="font-size:14px;color:var(--text-muted);text-align:center;padding:1.25rem">Completa tu primer quiz para ver el historial.</div>';return;}
+  sl.innerHTML=STATS.sessions.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:10px 0;${i>0?'border-top:1px solid var(--border)':''}"><div style="font-size:12px;color:var(--text-muted);font-weight:600;min-width:72px">${s.date}</div><div style="flex:1"><div class="progress-bar"><div class="progress-fill ${s.score>=80?'pf-success':s.score>=60?'pf-accent':'pf-warning'}" style="width:${s.score}%"></div></div></div><div style="font-size:13px;font-weight:800;color:var(--text-primary);min-width:40px;text-align:right">${s.score}%</div><div style="font-size:11px;color:var(--text-muted)">${s.ok}/${s.total}</div></div>`).join('');
+}
+
+function resetStats(){if(!confirm('¿Reiniciar todas las estadísticas?'))return;STATS=initStats();saveStats(STATS);renderStats();renderHome();}
+
+async function sendChat(){const inp=document.getElementById('chat-inp'),msg=inp.value.trim();if(!msg)return;inp.value='';addMsg(msg,'user');chatHistory.push({role:'user',content:msg});await getReply();}
+
+function qa(q){switchTab('tutor');setTimeout(async()=>{addMsg(q,'user');chatHistory.push({role:'user',content:q});await getReply();},100);}
+window.qa=qa;
+
+function addMsg(txt,role){const a=document.getElementById('chat-area'),d=document.createElement('div');d.className='chat-msg '+role;d.textContent=txt;a.appendChild(d);a.scrollTop=a.scrollHeight;}
+
+async function getReply(){
+  const a=document.getElementById('chat-area'),ld=document.createElement('div');ld.className='chat-msg assistant';ld.innerHTML='<div class="dots"><span></span><span></span><span></span></div>';a.appendChild(ld);a.scrollTop=a.scrollHeight;
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-6',max_tokens:800,system:'Eres tutor experto de hematología clínica para residentes de medicina interna, basado en evidencia clínica. Respuestas en español, claras y pedagógicas. Incluye valores numéricos, criterios diagnósticos y fármacos específicos. Máximo 180 palabras. Usa listas cortas cuando ayude.',messages:chatHistory})});
+    const d=await r.json(),reply=d.content.map(b=>b.text||'').join('');
+    ld.innerHTML='';ld.textContent=reply;chatHistory.push({role:'assistant',content:reply});a.scrollTop=a.scrollHeight;
+  }catch(e){ld.textContent='Error de conexión. Intenta de nuevo.';}
+}
+
+renderHome();renderTopicGrid('topic-grid',selTopics);renderTopicGrid('flash-topic-grid',[]);updateStreak();
+</script>
+</body>
+</html>
